@@ -1,9 +1,12 @@
 /* 
- * Project myProject
- * Author: Your Name
- * Date: 
+ * Project EE1301 Final Project
+ * Author: Ryan Srichai
+ * Date: 24.11.24
  * For comprehensive documentation and examples, please visit:
  * https://docs.particle.io/firmware/best-practices/firmware-template/
+ * 
+ * Photon 2, deviceOS@5.8.0
+ * https://console.particle.io/ryans-proton-photon-32604/devices
  */
 
 // Include Particle Device OS APIs
@@ -19,17 +22,29 @@ SYSTEM_THREAD(ENABLED);
 // View logs with CLI using 'particle serial monitor --follow'
 SerialLogHandler logHandler(LOG_LEVEL_INFO);
 
-// setup() runs once, when the device is first turned on
+/* pin defines */
+#define C_LOW_PIN          D11
+#define C_SHARP_PIN        D11
+#define D_PIN              D11
+#define E_FLAT_PIN         D11
+#define E_PIN              D11
+#define F_PIN              D11
+#define F_SHARP_PIN        D11
+#define G_PIN              D11
+#define G_SHARP_PIN        D11
+#define A_PIN              D11
+#define B_FLAT_PIN         D11
+#define B_PIN              D11
+#define C_HIGH_PIN         D11
+
+/* globals */
+uint8_t buttonBuffers[15];
+
 void setup() {
-  // Put initialization like pinMode and begin functions here
+    
 }
 
-// loop() runs over and over again, as quickly as it can execute.
 void loop() {
-  // The core of your code will likely live here.
 
-  // Example: Publish event to cloud every 10 seconds. Uncomment the next 3 lines to try it!
-  // Log.info("Sending Hello World to the cloud!");
-  // Particle.publish("Hello world!");
-  // delay( 10 * 1000 ); // milliseconds and blocking - see docs for more info!
+    delay(1);
 }
