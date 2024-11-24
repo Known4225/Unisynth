@@ -94,13 +94,13 @@ uint8_t buttonPins[16] = {
 };
 uint8_t buttonBuffers[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // for debouncing
 uint8_t controlButtons[3] = {0, 0, 0};
-uint8_t currentOctave = 4;
+uint8_t currentOctave = 5;
 uint8_t oldOctave = 0;
 uint8_t currentWave = SIN;
 uint8_t currentNote = 0;
 uint8_t mute = 1;
 double theta = 0.0;
-double frequency = 261.63;
+double frequency = 523.25;
 double volume = 1;
 double Ts = 5.0 / 1000000;
 uint32_t microseconds = 0;
@@ -113,7 +113,7 @@ void incrementOctave() {
 }
 
 void decrementOctave() {
-    if (currentOctave > 0) {
+    if (currentOctave > 2) {
         currentOctave--;
     }
 }
@@ -133,43 +133,43 @@ void playNote(PINOUT note) {
     oldOctave = currentOctave;
     switch (note) {
         case C_LOW:
-        frequency = 16.35 * pow(2, currentOctave);
+        frequency = 523.25 * pow(2, currentOctave - 5);
         break;
         case C_SHARP:
-        frequency = 17.32 * pow(2, currentOctave);
+        frequency = 554.37 * pow(2, currentOctave - 5);
         break;
         case D:
-        frequency = 18.35 * pow(2, currentOctave);
+        frequency = 587.33 * pow(2, currentOctave - 5);
         break;
         case E_FLAT:
-        frequency = 19.45 * pow(2, currentOctave);
+        frequency = 622.25 * pow(2, currentOctave - 5);
         break;
         case E:
-        frequency = 20.60 * pow(2, currentOctave);
+        frequency = 659.26 * pow(2, currentOctave - 5);
         break;
         case F:
-        frequency = 21.83 * pow(2, currentOctave);
+        frequency = 698.46 * pow(2, currentOctave - 5);
         break;
         case F_SHARP:
-        frequency = 23.12 * pow(2, currentOctave);
+        frequency = 739.99 * pow(2, currentOctave - 5);
         break;
         case G:
-        frequency = 24.50 * pow(2, currentOctave);
+        frequency = 783.99 * pow(2, currentOctave - 5);
         break;
         case G_SHARP:
-        frequency = 25.96 * pow(2, currentOctave);
+        frequency = 830.61 * pow(2, currentOctave - 5);
         break;
         case A:
-        frequency = 27.50 * pow(2, currentOctave);
+        frequency = 880.00 * pow(2, currentOctave - 5);
         break;
         case B_FLAT:
-        frequency = 29.14 * pow(2, currentOctave);
+        frequency = 932.33 * pow(2, currentOctave - 5);
         break;
         case B:
-        frequency = 30.87 * pow(2, currentOctave);
+        frequency = 987.77 * pow(2, currentOctave - 5);
         break;
         case C_HIGH:
-        frequency = 16.35 * pow(2, currentOctave + 1);
+        frequency = 523.25 * pow(2, currentOctave - 4);
         break;
         default:
         break;
@@ -181,11 +181,11 @@ void music() {
     if (mute) {
         return;
     }
-    uint8_t timeMicros = micros() - microseconds;
     digitalWrite(SPEAKER_PIN, HIGH);
+    uint8_t timeMicros = micros() - microseconds;
     delayMicroseconds(1000000 / frequency - timeMicros);
     digitalWrite(SPEAKER_PIN, LOW);
-    delayMicroseconds(1000000 / frequency);
+    delayMicroseconds(1000000 / frequency - 4); // https://roboticsbackend.com/arduino-fast-digitalwrite/#:~:text=We%20have%20the%20answer%3A%20a,have%20a%20much%20better%20precision.
 }
 
 void setup() {
