@@ -23,19 +23,19 @@ SYSTEM_THREAD(ENABLED);
 SerialLogHandler logHandler(LOG_LEVEL_INFO);
 
 /* pin defines */
-#define C_LOW_PIN          D11
-#define C_SHARP_PIN        D10
-#define D_PIN              D12
-#define E_FLAT_PIN         D7
-#define E_PIN              D13
-#define F_PIN              D14
-#define F_SHARP_PIN        D6
-#define G_PIN              D19
-#define G_SHARP_PIN        D5
-#define A_PIN              D18
-#define B_FLAT_PIN         D4
-#define B_PIN              D17
-#define C_HIGH_PIN         D15
+#define C_LOW_PIN          D10
+#define C_SHARP_PIN        D11
+#define D_PIN              D7
+#define E_FLAT_PIN         D12
+#define E_PIN              D6
+#define F_PIN              D5
+#define F_SHARP_PIN        D13
+#define G_PIN              D4
+#define G_SHARP_PIN        D14
+#define A_PIN              D3
+#define B_FLAT_PIN         D19
+#define B_PIN              D2
+#define C_HIGH_PIN         D1
 
 #define OCTAVE_DOWN_PIN    D8
 #define OCTAVE_UP_PIN      D9
