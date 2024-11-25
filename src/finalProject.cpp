@@ -123,6 +123,20 @@ void incrementWaveform() {
     if (currentWave > SQUARE) {
         currentWave = SIN;
     }
+    switch (currentWave) {
+        case SIN:
+        Serial.println("SIN");
+        break;
+        case TRIANGLE:
+        Serial.println("TRIANGLE");
+        break;
+        case SAW:
+        Serial.println("SAW");
+        break;
+        case SQUARE:
+        Serial.println("SQUARE");
+        break;
+    }
 }
 
 void playNote(PINOUT note) {
@@ -178,16 +192,73 @@ void playNote(PINOUT note) {
 }
 
 void music() {
+    /* analogWrite takes on average 77us - https://forum.arduino.cc/t/how-long-does-analogwrite-take/64268/8*/
     if (mute) {
         return;
     }
     digitalWrite(SPEAKER_PIN, HIGH);
-    uint8_t timeMicros = micros() - microseconds;
-    delayMicroseconds(1000000 / frequency - timeMicros);
-    microseconds = micros();
+    uint32_t timeMicros = micros() - microseconds;
+    delayMicroseconds(1000000 / frequency);
     digitalWrite(SPEAKER_PIN, LOW);
-    timeMicros = micros() - microseconds;
-    delayMicroseconds(1000000 / frequency - timeMicros);
+    delayMicroseconds(1000000 / frequency - timeMicros - 4); // https://roboticsbackend.com/arduino-fast-digitalwrite/#:~:text=We%20have%20the%20answer%3A%20a,()%20to%20get%20the%20time.
+    // switch (currentWave) {
+    //     case SIN: {
+    //         /* divide half-time into units of 77us */
+    //         microseconds = micros();
+    //         double timeAllotted = (1000000 / frequency - timeMicros);
+    //         double analogIncrement = 255 / (timeAllotted / 77.0);
+    //         double analogValue = 0;
+    //         while (micros() - microseconds < timeAllotted) {
+    //             analogWrite(SPEAKER_PIN, analogValue);
+    //             analogValue += analogIncrement;
+    //         }
+    //         microseconds = micros();
+    //         analogValue = 255;
+    //         while (micros() - microseconds < timeAllotted) {
+    //             analogWrite(SPEAKER_PIN, analogValue);
+    //             analogValue -= analogIncrement;
+    //         }
+    //     }
+    //     return;
+    //     case TRIANGLE: {
+    //         /* divide half-time into units of 77us */
+    //         microseconds = micros();
+    //         double timeAllotted = (1000000 / frequency - timeMicros);
+    //         double analogIncrement = 255 / (timeAllotted / 77.0);
+    //         double analogValue = 0;
+    //         while (micros() - microseconds < timeAllotted) {
+    //             analogWrite(SPEAKER_PIN, analogValue);
+    //             analogValue += analogIncrement;
+    //         }
+    //         microseconds = micros();
+    //         analogValue = 255;
+    //         while (micros() - microseconds < timeAllotted) {
+    //             analogWrite(SPEAKER_PIN, analogValue);
+    //             analogValue -= analogIncrement;
+    //         }
+    //     }
+    //     return;
+    //     case SAW: {
+    //         /* divide time into units of 77us */
+    //         double timeAllotted = (2000000 / frequency - timeMicros);
+    //         double analogIncrement = 255 / (timeAllotted / 77.0);
+    //         double analogValue = 255;
+    //         microseconds = micros();
+    //         while (micros() - microseconds < timeAllotted) {
+    //             analogWrite(SPEAKER_PIN, analogValue);
+    //             analogValue -= analogIncrement;
+    //         }
+    //     }
+    //     return;
+    //     case SQUARE: {
+    //         digitalWrite(SPEAKER_PIN, HIGH);
+    //         delayMicroseconds(1000000 / frequency);
+    //         digitalWrite(SPEAKER_PIN, LOW);
+    //         uint16_t timeMicros = micros() - microseconds;
+    //         delayMicroseconds(1000000 / frequency - timeMicros);
+    //     }
+    //     return;
+    // }
 }
 
 void setup() {
@@ -254,12 +325,6 @@ void loop() {
     } else {
         controlButtons[2] = 1;
     }
-    /* change note */
+    /* play note */
     music();
-    // Serial.println(timeMicros);
-    /* 150us delay */
-    // if (timeMicros < 150) {
-    //     delayMicroseconds(150 - (timeMicros));
-    // }
-    // delayMicroseconds(5 - (micros() - microseconds));
 }
