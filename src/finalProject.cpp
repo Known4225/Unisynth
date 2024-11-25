@@ -184,8 +184,10 @@ void music() {
     digitalWrite(SPEAKER_PIN, HIGH);
     uint8_t timeMicros = micros() - microseconds;
     delayMicroseconds(1000000 / frequency - timeMicros);
+    microseconds = micros();
     digitalWrite(SPEAKER_PIN, LOW);
-    delayMicroseconds(1000000 / frequency - 4); // https://roboticsbackend.com/arduino-fast-digitalwrite/#:~:text=We%20have%20the%20answer%3A%20a,have%20a%20much%20better%20precision.
+    timeMicros = micros() - microseconds;
+    delayMicroseconds(1000000 / frequency - timeMicros);
 }
 
 void setup() {
