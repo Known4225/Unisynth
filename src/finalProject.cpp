@@ -11,6 +11,7 @@
 
 // Include Particle Device OS APIs
 #include "Particle.h"
+#include <SPI.h>
 
 // Let Device OS manage the connection to the Particle Cloud
 SYSTEM_MODE(AUTOMATIC);
@@ -45,7 +46,10 @@ SerialLogHandler logHandler(LOG_LEVEL_INFO);
 
 #define ANALOG_MAX         4095
 
+
 #define SPI_CS_PIN         D18
+#define SPI_CLK_PIN        D17
+#define SPI_MOSI_PIN       D15
 
 /* array enum */
 enum PINOUT {
@@ -108,16 +112,38 @@ double Ts = 5.0 / 1000000;
 uint32_t microseconds = 0;
 
 /* functions */
+void spi_transfer(uint8_t byte) {
+    uint8_t mask = 0b10000000;
+    for (int i = 0; i < 8; i++) {
+        if (byte & mask) {
+            digitalWrite(SPI_MOSI_PIN, HIGH);
+        } else {
+            digitalWrite(SPI_MOSI_PIN, LOW);
+        }
+        digitalWrite(SPI_CLK_PIN, HIGH);
+        delayMicroseconds(1);
+        digitalWrite(SPI_CLK_PIN, LOW);
+        delayMicroseconds(1);
+        mask >>= 1;
+    }
+}
+
 void incrementOctave() {
-    if (currentOctave < 8) {
+    if (currentOctave < 7) {
         currentOctave++;
     }
+    digitalWrite(SPI_CS_PIN, LOW);
+    spi_transfer(1 << (currentOctave - 1));
+    digitalWrite(SPI_CS_PIN, HIGH);
 }
 
 void decrementOctave() {
     if (currentOctave > 2) {
         currentOctave--;
     }
+    digitalWrite(SPI_CS_PIN, LOW);
+    spi_transfer(1 << (currentOctave - 1));
+    digitalWrite(SPI_CS_PIN, HIGH);
 }
 
 void incrementWaveform() {
@@ -200,9 +226,9 @@ void music() {
     }
     digitalWrite(SPEAKER_PIN, HIGH);
     uint32_t timeMicros = micros() - microseconds;
-    delayMicroseconds(1000000 / frequency);
+    delayMicroseconds(1000000.0 / frequency - timeMicros);
     digitalWrite(SPEAKER_PIN, LOW);
-    delayMicroseconds(1000000 / frequency - timeMicros - 4); // https://roboticsbackend.com/arduino-fast-digitalwrite/#:~:text=We%20have%20the%20answer%3A%20a,()%20to%20get%20the%20time.
+    delayMicroseconds(1000000.0 / frequency - 4); // https://roboticsbackend.com/arduino-fast-digitalwrite/#:~:text=We%20have%20the%20answer%3A%20a,have%20a%20much%20better%20precision.
     // switch (currentWave) {
     //     case SIN: {
     //         /* divide half-time into units of 77us */
@@ -268,11 +294,17 @@ void setup() {
     for (int i = 0; i < 16; i++) {
         pinMode(buttonPins[i], INPUT_PULLUP);
     }
-    /* PWM pin */
-    pinMode(SPEAKER_PIN, OUTPUT);	
     /* SPI pins */
     pinMode(SPI_CS_PIN, OUTPUT);
-    // analogWriteResolution(SPEAKER_PIN, 12);
+    pinMode(SPI_CLK_PIN, OUTPUT);
+    pinMode(SPI_MOSI_PIN, OUTPUT);
+    digitalWrite(SPI_CS_PIN, HIGH);
+    delay(10);
+    digitalWrite(SPI_CS_PIN, LOW);
+    spi_transfer(0b00010000);
+    digitalWrite(SPI_CS_PIN, HIGH);
+    /* PWM pin */
+    pinMode(SPEAKER_PIN, OUTPUT);
     /* debug */
     Serial.begin(9600);
 }
