@@ -45,6 +45,8 @@ SerialLogHandler logHandler(LOG_LEVEL_INFO);
 
 #define ANALOG_MAX         4095
 
+#define SPI_CS_PIN         D18
+
 /* array enum */
 enum PINOUT {
     C_LOW = 0,
@@ -268,6 +270,8 @@ void setup() {
     }
     /* PWM pin */
     pinMode(SPEAKER_PIN, OUTPUT);	
+    /* SPI pins */
+    pinMode(SPI_CS_PIN, OUTPUT);
     // analogWriteResolution(SPEAKER_PIN, 12);
     /* debug */
     Serial.begin(9600);
