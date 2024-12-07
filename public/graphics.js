@@ -837,6 +837,18 @@ function interactPiano(yinit, mx, my) {
     }
 }
 
+function playSound(frequency) {
+    fetch("https://api.particle.io/v1/devices/0a10aced202194944a06511c/cF_playNote", {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer b34ddbb00a3dcf9571eb63c9ce2eb6f1f5fba05b'
+        },
+        body: new URLSearchParams({
+            'args': frequency
+        })
+    });
+}
+
 function triggerKey(key) {
     if (pianoSoundPlaying[key] == 1) {
         pianoSoundPlaying[key] = 2;
@@ -844,9 +856,13 @@ function triggerKey(key) {
         // pianoSound[key].stop();
         // pianoSound[key].setVolume(volumeCoefficient);
         // pianoSound[key].play();
-        console.log(key);
+        // console.log(key);
         /* send to particle photon */
-
+        freqTable = [880.00, 932.33, 987.77, 523.25, 554.37, 587.33, 622.25, 659.26, 698.46, 739.99, 783.99, 830.61];
+        frequency = freqTable[key % 12] * (2 ** Math.floor((key - 3) / 12 - 3));
+        // console.log(Math.floor((key - 3) / 12 - 3));
+        // console.log(frequency);
+        playSound(frequency);
         pianoSoundPlaying[key] = 2;
     }
 }
@@ -861,6 +877,7 @@ function pianoUpdateVolume() {
                 pianoSoundPlaying[i] *= volumeDecay;
                 if (pianoSoundPlaying[i] < 0.1) {
                     // pianoSound[i].stop();
+                    playSound('nop');
                     pianoSoundPlaying[i] = 0;
                 }
             }

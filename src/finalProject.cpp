@@ -105,6 +105,7 @@ uint8_t oldOctave = 0;
 uint8_t currentWave = SIN;
 uint8_t currentNote = 0;
 uint8_t mute = 1;
+uint8_t cloudMute = 1;
 double theta = 0.0;
 double frequency = 523.25;
 double volume = 1;
@@ -289,6 +290,17 @@ void music() {
     // }
 }
 
+int cloudPlayNote(String input) {
+    if (strcmp(input, "nop") == 0) {
+        cloudMute = 1;
+        return 0;
+    } else {
+        sscanf(input, "%lf", &frequency);
+        cloudMute = 0;
+    }
+    return 1;
+}
+
 void setup() {
     /* button pins */
     for (int i = 0; i < 16; i++) {
@@ -307,6 +319,8 @@ void setup() {
     pinMode(SPEAKER_PIN, OUTPUT);
     /* debug */
     Serial.begin(9600);
+    /* cloud */
+    Particle.function("cF_playNote", cloudPlayNote);
 }
 
 void loop() {
@@ -330,11 +344,16 @@ void loop() {
         }
     }
     if (anythingOn) {
+        cloudMute = 1;
         mute = 0;
         playNote((PINOUT) lastNote);
     } else {
-        /* no notes are being played */
-        mute = 1;
+        if (cloudMute == 0) {
+            mute = 0;
+        } else {
+            /* no notes are being played */
+            mute = 1;
+        }
     }
     /* handle extra buttons */
     if (buttonBuffers[OCTAVE_DOWN]) {
